@@ -1,0 +1,13 @@
+2025-03-22 21:27:02 | ERROR | ❌ Ошибка при создании пользователя: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "users" does not exist
+[SQL: INSERT INTO users (first_name, last_name, phone, password, id) VALUES ($1::VARCHAR, $2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::UUID) RETURNING users.created_at, users.updated_at]
+[parameters: ('string', 'string', 'string', 'string', UUID('7ed00137-e47c-41db-a1ab-8fb702c9abe2'))]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-03-22 21:27:02 | ERROR | Ошибка БД при создании пользователя
+2025-03-22 21:30:42 | INFO | ✔ Пользователь с ID 6a0e36e8-59dd-4a3d-b975-c2f90f9da21e создан
+2025-03-22 21:36:15 | WARNING | Ошибка: (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "users_phone_key"
+DETAIL:  Key (phone)=(string) already exists.
+[SQL: INSERT INTO users (first_name, last_name, phone, password, id) VALUES ($1::VARCHAR, $2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::UUID) RETURNING users.created_at, users.updated_at]
+[parameters: ('string', 'string', 'string', 'string', UUID('cab66b9d-3bcd-4d88-bb6a-b94a4358ac27'))]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-03-22 21:36:15 | WARNING | Ошибка создания пользователя: User already exists
+2025-03-22 21:36:38 | INFO | ✅ Найдено 1 заказов

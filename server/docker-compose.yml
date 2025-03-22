@@ -1,0 +1,22 @@
+services:
+  db:
+    container_name: events
+    image: postgres:17.2-alpine3.20
+
+    env_file:
+      - .env
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: events
+
+    ports:
+      - '5432:5432'
+    restart: always
+
+    volumes:
+      - ./data:/data/db
+
+volumes:
+  data:
