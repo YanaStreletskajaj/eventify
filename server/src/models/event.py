@@ -7,7 +7,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
 from database.base import Base
-
+from user import User
+from event_participant import EventParticipant
+from invitation import Invitation
 
 class Event(Base):
     __tablename__ = "events"
