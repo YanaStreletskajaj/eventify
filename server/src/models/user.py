@@ -6,7 +6,9 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database.base import Base
-
+from event import Event
+from event_participant import EventParticipant
+from invitation import Invitation
 
 class User(Base):
     __tablename__ = "users"
