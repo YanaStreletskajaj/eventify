@@ -6,9 +6,6 @@ from core import settings
 
 
 app = FastAPI()
-
-
-
 origins = [
     "http://localhost",
     "http://localhost:5000",

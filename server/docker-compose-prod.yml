@@ -1,0 +1,33 @@
+services:
+  backend:
+    build: ./server
+    container_name: fastapi-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    expose:
+      - "3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17-alpine
+    container_name: postgres-db
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${postgres_user}
+      POSTGRES_PASSWORD: ${postgres_password}
+      POSTGRES_DB: ${postgres_db}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${postgres_user} -d ${postgres_db}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    expose:
+      - "5432"
