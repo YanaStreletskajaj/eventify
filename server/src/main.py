@@ -7,10 +7,7 @@ from core import settings
 
 app = FastAPI()
 origins = [
-    "http://localhost",
-    "http://localhost:*",  # Разрешить все порты
-    "http://10.0.2.2:*",
-    "http://192.168.*.*:*"  # Локальная сеть
+    "*"  # Локальная сеть
 ]
 
 app.add_middleware(
