@@ -1,10 +1,5 @@
 FROM python:3.13-alpine
 
-RUN apk add --no-cache \
-    build-base \
-    libffi-dev \
-    postgresql-dev \
-    netcat-openbsd
 
 WORKDIR /app
 
@@ -14,6 +9,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 COPY . .
 
+EXPOSE 3000
 WORKDIR /app/src
 
 CMD ["sh", "-c", "alembic upgrade head && python main.py"]

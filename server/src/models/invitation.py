@@ -13,9 +13,6 @@ from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database.base import Base
-from event import Event
-from user import User
-
 
 class Invitation(Base):
     __tablename__ = "invitations"
