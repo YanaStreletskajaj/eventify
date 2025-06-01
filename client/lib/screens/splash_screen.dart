@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:events/screens/login_screen.dart';
+import 'package:events/screens/home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -13,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _scaleAnimation;
 
   @override
-  void initState() {
+void initState() {
     super.initState();
 
     _scaleController = AnimationController(
@@ -25,9 +29,46 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
     );
 
-    Future.delayed(const Duration(seconds: 5), () {
-      Navigator.pushReplacementNamed(context, '/home');
-    });
+    _checkAuthStatus();
+  }
+
+  Future<void> _checkAuthStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null || token.isEmpty) {
+      _goToLogin();
+      return;
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse('https://31.207.76.8/users/me'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (!mounted) return;
+
+      if (response.statusCode == 200) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const CalendarPage()),
+        );
+      } else {
+        _goToLogin();
+      }
+    } catch (e) {
+      _goToLogin();
+    }
+  }
+
+  void _goToLogin() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+    );
   }
 
   @override
@@ -103,3 +144,4 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 }
+

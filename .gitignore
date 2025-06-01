@@ -1,1 +1,3 @@
 .idea
+client/lib/screens/event_details.dart
+server/src/dao/user.zip

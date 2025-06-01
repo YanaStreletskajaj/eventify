@@ -1,6 +1,11 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
+
+from core.auth import get_current_user
+from models.user import User
 
 from core import logger
 from dao.user import UserDAO
@@ -23,11 +28,22 @@ async def create_user(request: UserRequestCreate, session: AsyncSession = Depend
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.get("/", response_model=list[UserResponse], status_code=200, summary="Get all users")
-async def get_users(session: AsyncSession = Depends(get_session)):
-    user_dao = UserDAO(session)
-    try:
-        users = await user_dao.get_users()
-        return [UserResponse.model_validate(user) for user in users]
-    except RuntimeError:
-        logger.error("Ошибка БД при получение пользователей")
-        raise HTTPException(status_code=500, detail="Internal server error")
+async def get_users(
+    session: AsyncSession = Depends(get_session),
+    current_user: str = Depends(get_current_user)                
+    ):
+        user_dao = UserDAO(session)
+        try:
+            users = await user_dao.get_users()
+            return [UserResponse.model_validate(user) for user in users]
+        except RuntimeError:
+            logger.error("Ошибка БД при получение пользователей")
+            raise HTTPException(status_code=500, detail="Internal server error")
+        
+
+@router.get("/me", response_model=UserResponse, summary="Получить текущего пользователя")
+async def get_me(current_user: User = Depends(get_current_user)):
+    return JSONResponse(
+        content=UserResponse.model_validate(current_user).model_dump(mode="json"),
+        media_type="application/json; charset=utf-8"
+    )

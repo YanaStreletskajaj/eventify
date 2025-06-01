@@ -1,8 +1,12 @@
+import 'package:events/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:events/models/event_model.dart';
+import 'package:events/services/notification_service.dart';
 
 class CreateEventPage extends StatefulWidget {
-  const CreateEventPage({super.key});
+  final Event? event;
+  const CreateEventPage({super.key, this.event});
 
   @override
   _CreateEventPageState createState() => _CreateEventPageState();
@@ -75,6 +79,61 @@ class _CreateEventPageState extends State<CreateEventPage> {
     }
   }
 
+  Future<void> _saveEvent() async {
+    if (_formKey.currentState!.validate()) {
+      final newEvent = Event(
+        id: widget.event?.id ?? '',
+        title: _titleController.text,
+        startDate: _startDate,
+        endDate: _endDate,
+        location: _locationController.text,
+        notes: _notesController.text,
+        repeat: _repeatValue,
+        reminder: _reminderValue,
+      );
+
+      final success = await ApiService().createEvent(newEvent);
+
+      if (success) {
+        final id = DateTime.now().millisecondsSinceEpoch.remainder(100000);
+        Duration? reminderOffset;
+        switch (_reminderValue) {
+          case 'За неделю':
+            reminderOffset = const Duration(days: 7);
+            break;
+          case 'За 3 дня':
+            reminderOffset = const Duration(days: 3);
+            break;
+          case 'За 1 день':
+            reminderOffset = const Duration(days: 1);
+            break;
+          case 'За 1 час':
+            reminderOffset = const Duration(hours: 1);
+            break;
+          default:
+            reminderOffset = null;
+        }
+
+        if (reminderOffset != null) {
+          final notificationTime = _startDate.subtract(reminderOffset);
+
+          // ⬇️ Вставляем сюда
+          
+
+          if (notificationTime.isAfter(DateTime.now())) {
+            await NotificationService.scheduleNotification(
+              id: id,
+              title: 'Напоминание: ${_titleController.text}',
+              body: 'Событие начнётся в ${DateFormat.Hm().format(_startDate)}',
+              scheduledTime: notificationTime,
+            );
+          }
+        } // можно также вернуть null, если не нужно использовать
+      }
+      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+    }
+  }
+
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       labelText: label,
@@ -95,16 +154,18 @@ class _CreateEventPageState extends State<CreateEventPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Новое событие', style: TextStyle(fontFamily: 'Unbounded')),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                // Сохранение события
-                Navigator.pop(context);
-              }
-            },
+          TextButton(
+            onPressed: _saveEvent,
+            child: const Text(
+              'Создать',
+              style: TextStyle(
+                fontFamily: 'Unbounded',
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: Color(0xFF891F79),
+              ),
+            ),
           ),
         ],
       ),
@@ -220,3 +281,4 @@ class _CreateEventPageState extends State<CreateEventPage> {
     super.dispose();
   }
 }
+

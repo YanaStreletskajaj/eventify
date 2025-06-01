@@ -4,7 +4,7 @@ import 'package:events/models/user_model.dart';
 import 'package:http/http.dart' as http;
 
 class UserService {
-  final String apiUrl = 'http://92.242.60.50:3000/users/';
+  final String apiUrl = 'http://31.207.76.8/users/';
 
   Future<UserResponse> createUser(UserRequestCreate userRequest) async {
     final response = await http.post(
